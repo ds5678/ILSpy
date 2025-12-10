@@ -308,7 +308,7 @@ namespace ICSharpCode.Decompiler.CSharp
 			// It is easier to solve this special case here than in PatternStatementTransform, because here we perform all resolver checks.
 			// It feels a bit hacky, though.
 			if (settings.AutomaticProperties
-				&& PatternStatementTransform.IsBackingFieldOfAutomaticProperty(field, out var property)
+				&& PatternStatementTransform.IsBackingFieldOfProperty(field, out var property)
 				&& decompilationContext.CurrentMember != property
 				&& (property.CanSet || settings.GetterOnlyAutomaticProperties))
 			{

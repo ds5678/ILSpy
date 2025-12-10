@@ -344,7 +344,7 @@ namespace ICSharpCode.Decompiler.CSharp
 							return true;
 						if (settings.UsePrimaryConstructorSyntaxForNonRecordTypes && IsPrimaryConstructorParameterBackingField(field, metadata))
 							return true;
-						if (settings.AutomaticProperties && module.PropertyAndEventBackingFieldLookup.IsPropertyBackingField(fieldHandle, out var propertyHandle))
+						if ((settings.AutomaticProperties || settings.FieldKeywordInProperties) && module.PropertyAndEventBackingFieldLookup.IsPropertyBackingField(fieldHandle, out var propertyHandle))
 						{
 							if (!settings.GetterOnlyAutomaticProperties)
 							{

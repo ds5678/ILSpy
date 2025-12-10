@@ -176,12 +176,13 @@ namespace ICSharpCode.Decompiler
 			{
 				extensionMembers = false;
 				firstClassSpanTypes = false;
+				fieldKeywordInProperties = false;
 			}
 		}
 
 		public CSharp.LanguageVersion GetMinimumRequiredVersion()
 		{
-			if (extensionMembers || firstClassSpanTypes)
+			if (extensionMembers || firstClassSpanTypes || fieldKeywordInProperties)
 				return CSharp.LanguageVersion.CSharp14_0;
 			if (paramsCollections)
 				return CSharp.LanguageVersion.CSharp13_0;
@@ -769,6 +770,24 @@ namespace ICSharpCode.Decompiler
 				if (getterOnlyAutomaticProperties != value)
 				{
 					getterOnlyAutomaticProperties = value;
+					OnPropertyChanged();
+				}
+			}
+		}
+
+		bool fieldKeywordInProperties = true;
+
+		/// <summary>
+		/// Gets/Sets whether field is a keyword in property declarations.
+		/// </summary>
+		[Category("C# 14.0 / VS 202x.yy")]
+		[Description("DecompilerSettings.FieldKeywordInProperties")]
+		public bool FieldKeywordInProperties {
+			get { return fieldKeywordInProperties; }
+			set {
+				if (fieldKeywordInProperties != value)
+				{
+					fieldKeywordInProperties = value;
 					OnPropertyChanged();
 				}
 			}

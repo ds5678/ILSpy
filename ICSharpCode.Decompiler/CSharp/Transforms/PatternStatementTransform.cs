@@ -628,7 +628,7 @@ namespace ICSharpCode.Decompiler.CSharp.Transforms
 					field = m2.Get<AstNode>("fieldReference").Single().GetSymbol() as IField;
 				}
 			}
-			if (field == null || !NameCouldBeBackingFieldOfAutomaticProperty(field.Name, out _))
+			if (field == null || !NameCouldBeBackingFieldOfProperty(field.Name, out _))
 				return null;
 			if (propertyDeclaration.Setter.HasModifier(Modifiers.Readonly) || (propertyDeclaration.HasModifier(Modifiers.Readonly) && !propertyDeclaration.Setter.IsNull))
 				return null;
@@ -703,10 +703,10 @@ namespace ICSharpCode.Decompiler.CSharp.Transforms
 			return base.VisitIdentifier(identifier);
 		}
 
-		internal static bool IsBackingFieldOfAutomaticProperty(IField field, out IProperty property)
+		internal static bool IsBackingFieldOfProperty(IField field, out IProperty property)
 		{
 			property = null;
-			if (!NameCouldBeBackingFieldOfAutomaticProperty(field.Name, out string propertyName))
+			if (!NameCouldBeBackingFieldOfProperty(field.Name, out string propertyName))
 				return false;
 			if (!field.IsCompilerGenerated())
 				return false;
@@ -723,13 +723,13 @@ namespace ICSharpCode.Decompiler.CSharp.Transforms
 		///		<item>_Property (used by VB)</item>
 		/// </list>
 		/// </summary>
-		static readonly System.Text.RegularExpressions.Regex automaticPropertyBackingFieldNameRegex
+		static readonly System.Text.RegularExpressions.Regex propertyBackingFieldNameRegex
 			= new System.Text.RegularExpressions.Regex(@"^(<(?<name>.+)>k__BackingField|_(?<name>.+))$");
 
-		static bool NameCouldBeBackingFieldOfAutomaticProperty(string name, out string propertyName)
+		static bool NameCouldBeBackingFieldOfProperty(string name, out string propertyName)
 		{
 			propertyName = null;
-			var m = automaticPropertyBackingFieldNameRegex.Match(name);
+			var m = propertyBackingFieldNameRegex.Match(name);
 			if (!m.Success)
 				return false;
 			propertyName = m.Groups["name"].Value;
@@ -738,12 +738,12 @@ namespace ICSharpCode.Decompiler.CSharp.Transforms
 
 		Identifier ReplaceBackingFieldUsage(Identifier identifier)
 		{
-			if (NameCouldBeBackingFieldOfAutomaticProperty(identifier.Name, out _))
+			if (NameCouldBeBackingFieldOfProperty(identifier.Name, out _))
 			{
 				var parent = identifier.Parent;
 				var mrr = parent.Annotation<MemberResolveResult>();
 				var field = mrr?.Member as IField;
-				if (field != null && IsBackingFieldOfAutomaticProperty(field, out var property)
+				if (field != null && IsBackingFieldOfProperty(field, out var property)
 					&& CanTransformToAutomaticProperty(property, !(field.IsCompilerGenerated() && field.Name == "_" + property.Name))
 					&& currentMethod.AccessorOwner != property)
 				{
